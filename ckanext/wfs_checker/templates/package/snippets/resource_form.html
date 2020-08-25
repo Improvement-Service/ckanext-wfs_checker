@@ -1,0 +1,201 @@
+{% import 'macros/form.html' as form %}
+
+{% set data = data or {} %}
+{% set errors = errors or {} %}
+{% set action = form_action or h.url_for(controller='package', action='new_resource', id=pkg_name) %}
+{% set pkg_title = pkg_name.title().replace('_',' ')[:pkg_name.title().replace('_',' ').find('-')] %}
+<form id="resource-edit" class="dataset-form dataset-resource-form form-horizontal" method="post" action="{{ action }}"
+      data-module="basic-form resource-form" enctype="multipart/form-data">
+    {% block stages %}
+    {# An empty stages variable will not show the stages #}
+    {% if stage %}
+    {{ h.snippet('package/snippets/stages.html', stages=stage, pkg_name=pkg_name) }}
+    {% endif %}
+    {% endblock %}
+
+    {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
+
+    <input name="id" value="{{ data.id }}" type="hidden"/>
+
+    <div class=dataset-title>{{pkg_title}}</div>
+
+    {% block basic_fields %}
+    {#
+    <p style="font-size:75%;color:#1a1a1a;background-color #ffffff"><b></b><i><em>#}
+        {% block basic_fields_url %}
+        {% set is_upload = (data.url_type == 'upload') %}
+        {{form.info(_('If using WFS click the "Get Layers" button and wait a few seconds for the layer selector box to
+        appear then you can select a layer from the drop down.')) }}
+
+        {{ form.image_upload(data, errors, field_url='url', field_upload='upload', field_clear='clear_upload',
+        is_upload_enabled=h.uploads_enabled(), is_url=data.url and not is_upload, is_upload=is_upload,
+        upload_label=_('Contribute'), placeholder=_('Please enter your WFS here'),
+        url_label=_('URL'))
+        }}
+        <!--      <button type="button" class="btn btn-primary" id='wfs_search'>Get Layers</button>-->
+        <!-- {{form.info(_('If using WFS you will need to wait a few seconds for the layer selector box to appear then you can select a layer from the drop down.')) }} -->
+        {% endblock %}
+
+
+        <div class="form-group row" id="is_wfs_group">
+            <label for="is_wfs" class="col-form-label required">Is Wfs</label>
+            <div class="input-group">
+                <select id="is_wfs" class="form-control control-medium">
+                    <option value="no" selected="selected">No</option>
+                    <option value="yes">Yes</option>
+                </select>
+                <span style="padding-top: 2px" class="input-group-btn">
+                  <button class="btn btn-success submitBtn" disabled id='get_layers_btn' type="button">get</button>
+                </span>
+            </div>
+        </div>
+
+        {% call form.select('layer_name',label=_('Choose layer'), id='layer_name_dropdown',
+        options=[{'name':'Choose-layer', 'value': ''}],error=errors.digit_background,
+        classes=['control-medium','wfs_select'], is_required=false) %}
+        {{ form.info(_('If you need to supply multiple layers from this WFS, please load them individually (as
+        separate resources). While the former approach is preferable, if you need to include many layers, an
+        alternative is to leave this box empty and provide details in the description box below')) }}
+        {% endcall %}
+
+        {% block basic_fields_name %}
+        {{ form.input('name', id='field-name', label=_("""Resource name"""), placeholder=_('eg. Vacant & Derelict
+        Land'), value=data.name, error=errors.name, classes=['control-full'],is_required=False) }}
+        {% endblock %}
+
+        {% block resource_custom_uploader_name %}
+        {{ form.input('uploader_name',label=_('Uploader'),id='resource-uploader_name',placeholder=_('John Smith'),
+        value=data.uploader_name,error=errors.uploader_name,classes=['control-medium'],is_required=true) }}
+        {% endblock %}
+
+        {% block resource_custom_department_name %}
+        {{ form.input('department_name',label=_('Department'),id='resource-department_name',
+        placeholder=_('GIS department'),value=data.department_name,error=errors.department_name,
+        classes=['control-medium'],is_required=true) }}
+        {% endblock %}
+
+        {% call form.select('digit_background',label=_('Digitisation Background'), id='digit_background',
+        options=[{'name':'OS Premium Data products','value':'OS Premium Data products'},{'name':'OS Open Data
+        products','value':'OS Open Data products'},
+        {'name':'OS Open/Premium Data products','value':'OS Open/Premium Data products'}, {'name':'No OS Data
+        Products','value':'No OS Data Products'}],
+        selected='I do not know',error=errors.digit_background,is_required=true) %}
+        {{ form.info(_('Most of the local authorities use Ordnance Survey data to assist with digitisation of GIS data.
+        Please select the background map which was used to assist with digitisation of this resource')) }}
+        {% endcall %}
+
+        {% call form.select('data_processor',label=_('Are you a data
+        processor?'),id='resource-data_processor',options=[{'name':'yes','value':'Yes'},
+        {'name':'no','value':'No'},{'name':'unknown','value':'I do not know'}],
+        selected='Yes',error=errors.data_processor,is_required=true) %}
+        {{ form.info(_('Most data custodians in Scottish local authorities are also responsible
+        for creating new data or editing existing data in GIS datasets. Are you responsible for
+        creating and editing data for this resource?')) }}
+        {% endcall %}
+
+        {% block basic_fields_description %}
+        {{ form.markdown('description', id='field-description', label=_('Short description'), placeholder=_('Please
+        provide any additional details that will enable us to make sense of what you are providing e.g. names of layers
+        to be included, any codes that we may need to understand, any specific digitisation methodologies that need to
+        be considered'),
+        value=data.description, error=errors.description) }}
+        {% endblock %}
+
+        <div class=terms-and-conditions>Terms & Conditions: By uploading this dataset to the Improvement Service Spatial
+            Hub you are agreeing to the
+            Improvement Service publishing this data on your organisations behalf and you confirm that you have the
+            authority to make that decision. You accept that this dataset
+            is royalty & licence free except for any Ordnance Survey Intellectual Property Rights (e.g. Derived Data)
+            and that you allow Improvement Service
+            to re-publish this dataset as part of Local Government core business (e.g. to meet INSPIRE regulations) as
+            long as the appropriate licences are in place.
+        </div>
+
+        <!-- {% block terms_conditions %}
+        {{ form.checkbox('terms_conditions',label=_('Please tick to agree'),id='resource-terms_conditions',value=data.terms_conditions,error=errors.terms_conditions,classes=['control-medium'],is_required=false) }}
+        {% endblock %} -->
+
+        {#{% block basic_fields_format %}
+        {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source':
+        '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
+        {% call form.input('format', id='field-format', label=_('Format'), placeholder=_('eg. ZIP, TAR or GEOJSON'),
+        value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs) %}
+        <span class="info-block info-block-small">
+          <i class="icon-info-sign"></i>
+          {{ _('This information is optional (Will be predicted automatically)') }}
+        </span>
+        {% endcall %}
+        {% endblock %}#}
+
+        {{ form.required_message() }}
+
+        <div>
+            <button type="button" id='checkBtn' class="btn btn-primary">Agree to Terms & Conditions and Contribute
+                Data
+            </button>
+        </div>
+
+        {% endblock basic_fields %}
+
+        {% block metadata_fields %}
+        {% if include_metadata %}
+        {# TODO: Where do these come from, they don't exist in /package/new_package_form.html #}
+        {# {{ form.select('resource_type', id='field-type', label=_('Resource Type'), options=[{'value': 'empty',
+        'text': _('Select a type…')}], selected="empty", error=errors.type) }} #}
+
+        {{ form.input('last_modified', id='field-last-modified', label=_('Last Modified'), placeholder=_('eg.
+        2012-06-05'), value=data.last_modified, error=errors.last_modified, classes=[]) }}
+
+        {{ form.input('size', id='field-size', label=_('File Size'), placeholder=_('eg. 1024'), value=data.size,
+        error=errors.size, classes=[]) }}
+
+        {{ form.input('mimetype', id='field-mimetype', label=_('MIME Type'), placeholder=_('eg. application/json'),
+        value=data.mimetype, error=errors.mimetype, classes=[]) }}
+
+        {{ form.input('mimetype_inner', id='field-mimetype-inner', label=_('MIME Type'), placeholder=_('eg.
+        application/json'), value=data.mimetype_inner, error=errors.mimetype_inner, classes=[]) }}
+        {% endif %}
+        {% endblock %}
+
+        <div class="form-actions">
+            {% block delete_button %}
+            {% if data.id %}
+            {% if h.check_access('resource_delete', {'id': data.id}) %}
+            {% set locale = h.dump_json({'content': _('Are you sure you want to delete this resource?')}) %}
+            <a class="btn btn-danger pull-left"
+               href="{% url_for controller='package', action='resource_delete', resource_id=data.id, id=pkg_name %}"
+               data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete')
+                }}{% endblock %}</a>
+            {% endif %}
+            {% endif %}
+            {% endblock %}
+            {% if stage %}
+            {% block previous_button %}
+            <button class="btn" name="save" value="go-dataset" type="submit">{{ _('Previous') }}</button>
+            {% endblock %}
+            {% block again_button %}
+            <button class="btn" name="save" value="again" type="submit">{{ _('Save & add another') }}</button>
+            {% endblock %}
+            {% block save_button %}
+            <button id='saveBtn' style='display:none;' class="btn btn-primary" name="save" value="go-metadata"
+                    type="submit">{% block save_button_text %}{{ _('Finish') }}{% endblock %}
+            </button>
+            {% endblock %}
+            {% else %}
+            {% block add_button %}
+            <button id='submitBtn' style='display:none;' class="btn btn-primary" name="save" value="go-dataset-complete"
+                    type="submit">{{ _('Agree to Terms & Conditions and Contribute Data') }}
+            </button>
+            {% endblock %}
+            {% endif %}
+        </div>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/bluebird/3.5.0/bluebird.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es2017%2CElement.prototype.prepend%2CElement.prototype.append%2CElement.prototype.after%2CElement.prototype.before%2CElement.prototype.classList%2CElement.prototype.dataset%2CElement.prototype.closest%2CElement.prototype.cloneNode%2CElement.prototype.placeholder%2CElement.prototype.matches%2CElement.prototype.inert%2CElement.prototype.remove%2CElement.prototype.toggleAttribute%2CElement.prototype.replaceWith%2CEvent%2CEvent.focusin%2CEventSource%2CEvent.hashchange%2CFunction.prototype.name%2CFunction.prototype.bind"></script>
+{% block scripts %}
+<script src="../../wfs_checker/bundle.js" type='text/javascript'></script>
+<link rel="stylesheet" type="text/css" href="../../wfs_checker/theme.css">
+{% endblock %}
+

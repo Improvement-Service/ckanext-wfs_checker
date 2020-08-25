@@ -100,7 +100,7 @@ function CursorAuto() {
 
 $(document).ready(function() {
     setTimeout(layer_select_controls, 800)
-    is_wfs_display_none()
+    // is_wfs_display_none()
 
     $('#is_wfs').change(function(){
         var x = $(this).val()
@@ -126,6 +126,13 @@ $(document).ready(function() {
     $('#checkBtn').click(function() {
         checkValues()
     })
+
+    let layer_dropdown = document.getElementById('layer_name_dropdown')
+    if (layer_dropdown.options[0].value.length > 0){
+        wfs_selector_enable()
+        layer_dropdown_enable()
+    }
+    console.log(layer_dropdown.options[0].value.length)
 })
 
 //emptys multi select text box
@@ -223,7 +230,7 @@ var addToDropDown = function(data) {
         myOptions.push(entry)
     }
     $('#layer_name_dropdown').empty()
-    var select = "<option value=" + 'null' + ">Please Select Layer</option>";
+    var select = "<option value=" + '' + ">Please Select Layer</option>";
     $(select).appendTo('#layer_name_dropdown');
     $.each(myOptions, function(i, data) {
         var div_data = "<option value=" + data.value + ">" + data.text + "</option>";

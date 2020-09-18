@@ -31,10 +31,15 @@
         {% if data.is_wfs == 'yes' %}
         <div class="form-group row" id="is_wfs_group">
             <label for="is_wfs" class="col-form-label required">Is WFS</label>
+            <div class="input-group">
                 <select id="is_wfs" name="is_wfs" class="form-control control-medium">
                     <option value="no">No</option>
                     <option value="yes" selected="selected">Yes</option>
                 </select>
+                <span style="padding-top: 2px" class="input-group-btn">
+                  <button class="btn btn-success submitBtn" id='get_layers_btn' type="button">get</button>
+               </span>
+            </div>
           <div class="info-block ">
                 <i class="fa fa-info-circle"></i>
                 If using WFS click the "GET" button and wait a few seconds for the layer selector box to
@@ -49,6 +54,9 @@
                     <option value="no" selected="selected">No</option>
                     <option value="yes">Yes</option>
                 </select>
+                <span style="padding-top: 2px" class="input-group-btn">
+                  <button class="btn btn-success submitBtn" disabled id='get_layers_btn' type="button">get</button>
+                </span>
             </div>
             <div class="info-block ">
                 <i class="fa fa-info-circle"></i>
@@ -65,16 +73,11 @@
         {% endif %}
                 <label class="control-label" for="layer_name_dropdown">Choose layer</label>
                 <div class="controls ">
-                    <div class="input-group">
-                        <select id="layer_name_dropdown" name="layer_name" class="form-control">
-                            <option value={{data.layer_name}}>
-                                {{data.layer_name}}
-                            </option>
-                        </select>
-                        <span style="padding-top: 2px" class="input-group-btn">
-                            <button class="btn btn-success submitBtn" disabled id='get_layers_btn' type="button">get</button>
-                        </span>
-                    </div>
+                    <select id="layer_name_dropdown" name="layer_name" class="form-control">
+                        <option value={{data.layer_name}}>
+                            {{data.layer_name}}
+                        </option>
+                    </select>
                     <div class="info-block ">
                         <i class="fa fa-info-circle"></i>
                         If you need to supply multiple layers from this WFS, please load them individually (as

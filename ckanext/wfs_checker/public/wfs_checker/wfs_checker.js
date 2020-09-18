@@ -79,6 +79,7 @@ function layer_dropdown_disable(){
 }
 
 function layer_dropdown_enable(){
+    console.log('call this')
     $("#layer_name_dropdown").css('display', 'inline-block'); //make drop down visible
 }
 
@@ -87,6 +88,8 @@ function wfs_selector_enable(){
 }
 
 function wfs_selector_disable(){
+    let x = getElementById('wfs_selector')
+    console.log(x)
     $("#wfs_selector").css('display', 'none'); //make drop down visible
 }
 
@@ -105,7 +108,10 @@ $(document).ready(function() {
     $('#is_wfs').change(function(){
         var x = $(this).val()
         if ($(this).val() == 'yes'){
+            console.log('yes')
             enable_get_layer_btn()
+            layer_dropdown_enable()
+            wfs_selector_enable()
             is_wfs = true
         }
         if ($(this).val() == 'no'){
@@ -345,8 +351,6 @@ function createErrorNotification(errors)  {
     let form = document.getElementById('resource-edit')
     form.prepend(div)
 }
-
-
 
 function checkValues() {
     let url = document.getElementById('field-image-url')

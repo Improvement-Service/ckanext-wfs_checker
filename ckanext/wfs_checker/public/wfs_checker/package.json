@@ -21,6 +21,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "css-loader": "^2.1.1",
+    "is-url": "^1.2.4",
     "jquery": "^3.5.1",
     "libxmljs": "^0.19.7",
     "node-pre-gyp": "^0.13.0",

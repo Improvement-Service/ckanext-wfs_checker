@@ -1,5 +1,6 @@
 require('@babel/polyfill');
 var parseString = require('xml2js').parseString;
+var isURL = require('is-url')
 
 const findPaths = (
  obj,
@@ -43,8 +44,8 @@ function layer_select_controls(){
     }
     document.getElementsByClassName("btn btn-danger btn-remove-url")[0].onclick = function(){
         is_wfs_display_none()
-        layer_dropdown_disable()
         wfs_selector_disable()
+        selectElement('is_wfs','no')
     }
     cleanTextInputBox() //add functions to be applied to layer selection box
     $("#layer_name_dropdown").on("change", choose_multiple) //apply onclick function here to avoid duplication
@@ -57,6 +58,10 @@ var doneTypingInterval = 2000;
 var is_wfs = false
 
 // UI functions
+function selectElement(id, valueToSelect) {    
+    let element = document.getElementById(id);
+    element.value = valueToSelect;
+}
 
 function is_wfs_display_none() {
     $("#is_wfs_group").css('display', 'none')
@@ -74,12 +79,10 @@ function enable_get_layer_btn() {
 }
 
 function layer_dropdown_disable(){
-    console.log('called')
     $("#layer_name_dropdown").css('display', 'none'); //make drop down visible
 }
 
 function layer_dropdown_enable(){
-    console.log('call this')
     $("#layer_name_dropdown").css('display', 'inline-block'); //make drop down visible
 }
 
@@ -88,8 +91,6 @@ function wfs_selector_enable(){
 }
 
 function wfs_selector_disable(){
-    let x = getElementById('wfs_selector')
-    console.log(x)
     $("#wfs_selector").css('display', 'none'); //make drop down visible
 }
 
@@ -108,24 +109,25 @@ $(document).ready(function() {
     $('#is_wfs').change(function(){
         var x = $(this).val()
         if ($(this).val() == 'yes'){
-            console.log('yes')
             enable_get_layer_btn()
-            layer_dropdown_enable()
             wfs_selector_enable()
             is_wfs = true
         }
         if ($(this).val() == 'no'){
             disable_get_layer_btn()
-            layer_dropdown_disable()
             wfs_selector_disable()
             is_wfs = false
         }
     })
 
     $('#get_layers_btn').click(function() {
-        CursorLoading()
-        if ($("#field-image-url").val()) {
+        url_value = $("#field-image-url").val()
+        if (url_value != '' && isURL(url_value)){
+            CursorLoading()
             getLayers()
+        }
+        else {
+            alert('Please Supply a valid url')
         }
     })
 
@@ -138,7 +140,7 @@ $(document).ready(function() {
         wfs_selector_enable()
         layer_dropdown_enable()
     }
-    console.log(layer_dropdown.options[0].value.length)
+
 })
 
 //emptys multi select text box
@@ -167,11 +169,21 @@ function take_jsonList_append_select(data){
 //handle load screen
 function handle_loading() {
     $("#layer_name_dropdown option").remove() //delete old optionshides layer options
-    layer_dropdown_enable() //reveals layer options
-    wfs_selector_enable()
+    // layer_dropdown_enable() //reveals layer options
+    // wfs_selector_enable()
     $('#layer_name_dropdown').append($('<option>', {
-        value: 1,
+        value: 'null',
         text: 'Loading...'
+    })); //Add a loading on dropdown while layers are loading.
+}
+
+function handle_request_fail() {
+    $("#layer_name_dropdown option").remove() //delete old optionshides layer options
+    // layer_dropdown_enable() //reveals layer options
+    // wfs_selector_enable()
+    $('#layer_name_dropdown').append($('<option>', {
+        value: 'null',
+        text: 'No Layers Available, Please Try Again.'
     })); //Add a loading on dropdown while layers are loading.
 }
 
@@ -280,6 +292,7 @@ var getData = function(data) {
         .catch((err) => {
             CursorAuto()
             alert("Unable to retrieve layers from WFS please continue");
+            handle_request_fail()
             return Promise.reject("Unable to retrieve layers from WFS please continue");
         })
         .then((res) => {

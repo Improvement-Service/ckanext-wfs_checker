@@ -37,8 +37,7 @@
                 </select>
           <div class="info-block ">
                 <i class="fa fa-info-circle"></i>
-                If using WFS click the "GET" button and wait a few seconds for the layer selector box to
-                appear then you can select a layer from the drop down.
+                If using WFS click the "GET LAYERS" button and wait a few seconds for your layers to appear.
             </div>
         </div>
         {% else %}
@@ -52,8 +51,7 @@
             </div>
             <div class="info-block ">
                 <i class="fa fa-info-circle"></i>
-                If using WFS click the "GET" button and wait a few seconds for the layer selector box to
-                appear then you can select a layer from the drop down.
+                If using WFS click the "GET LAYERS" button and wait a few seconds for your layers to appear.
             </div>
         </div>
         {% endif %}
@@ -72,7 +70,7 @@
                             </option>
                         </select>
                         <span style="padding-top: 2px" class="input-group-btn">
-                            <button class="btn btn-success submitBtn" id='get_layers_btn' type="button">get</button>
+                            <button class="btn btn-success submitBtn" id='get_layers_btn' type="button">GET LAYERS</button>
                         </span>
                     </div>
                     <div class="info-block ">
@@ -87,8 +85,8 @@
 
 
             {% block basic_fields_name %}
-            {{ form.input('name', id='field-name', label=_("""Resource name"""), placeholder=_('eg. Vacant & Derelict
-            Land'), value=data.name, error=errors.name, classes=['control-full'],is_required=False) }}
+            {{ form.input('name', id='field-name', label=_("""Resource name"""), placeholder=_('eg. Vacant & Derelict Land'),
+            value=data.name, error=errors.name, classes=['control-full'],is_required=False) }}
             {% endblock %}
 
             {% block resource_custom_uploader_name %}
@@ -123,7 +121,7 @@
             {% endcall %}
 
                {% block basic_fields_description %}
-                  {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Please provide any additional details that will enable us to make sense of what you are providing e.g. names of layers to be included, any codes that we may need to understand, any specific digitisation methodologies that need to be considered'), value=data.description, error=errors.description) }}
+                  {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Please provide any additional details that will enable us to make sense of what you are providing e.g. names of layers to be included, any codes that we may need to understand, any specific digitisation methodologies that need to be considered.'), value=data.description, error=errors.description) }}
               {% endblock %}
 
             <div class=terms-and-conditions>Terms & Conditions: By uploading this dataset to the Improvement Service
@@ -221,8 +219,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es2017%2CElement.prototype.prepend%2CElement.prototype.append%2CElement.prototype.after%2CElement.prototype.before%2CElement.prototype.classList%2CElement.prototype.dataset%2CElement.prototype.closest%2CElement.prototype.cloneNode%2CElement.prototype.placeholder%2CElement.prototype.matches%2CElement.prototype.inert%2CElement.prototype.remove%2CElement.prototype.toggleAttribute%2CElement.prototype.replaceWith%2CEvent%2CEvent.focusin%2CEventSource%2CEvent.hashchange%2CFunction.prototype.name%2CFunction.prototype.bind"></script>
 {% block scripts %}
-<script src="../../../test.js" type='text/javascript'></script>
-<script src="../../../wfs_checker/bundle.js" type='text/javascript'></script>
-<link rel="stylesheet" type="text/css" href="../../../wfs_checker/theme.css">
+    <script src="../../../wfs_checker/bundle.js" type='text/javascript'></script>
+    <link rel="stylesheet" type="text/css" href="../../../wfs_checker/theme.css">
 {% endblock %}
 

@@ -1,5 +1,40 @@
 require('@babel/polyfill');
+var parseString = require('xml2js').parseString;
 var isURL = require('is-url')
+
+const findPaths = (
+ obj,
+ searchValue,
+ { searchKeys = typeof searchValue === "string", maxDepth = 20 } = {}
+) => {
+ const paths = []
+ const notObject = typeof searchValue !== "object"
+ const gvpio = (obj, maxDepth, prefix) => {
+   if (!maxDepth) return
+
+   for (const [curr, currElem] of Object.entries(obj)) {
+     if (searchKeys && curr === searchValue) {
+       // To search for property name too ...
+       paths.push(prefix + curr)
+     }
+
+     if (typeof currElem === "object") {
+       // object is "object" and "array" is also in the eyes of "typeof"
+       // search again :D
+       gvpio(currElem, maxDepth - 1, prefix + curr + "/")
+       if (notObject) continue
+     }
+     // it's something else... probably the value we are looking for
+     // compares with "searchValue"
+     if (currElem === searchValue) {
+       // return index AND/OR property name
+       paths.push(prefix + curr)
+     }
+   }
+ }
+ gvpio(obj, maxDepth, "")
+ return paths
+}
 
 //all the elements that need modifying either aesthetically or to add functionality should be done here, at startup
 function layer_select_controls(){
@@ -17,6 +52,9 @@ function layer_select_controls(){
 }
 
 // Globals
+
+var typingTimer;                //timer identifier
+var doneTypingInterval = 2000;
 var is_wfs = false
 
 // UI functions
@@ -65,7 +103,7 @@ function CursorAuto() {
 }
 
 $(document).ready(function() {
-    setTimeout(layer_select_controls, 1000)
+    setTimeout(layer_select_controls, 800)
     // is_wfs_display_none()
 
     $('#is_wfs').change(function(){
@@ -195,13 +233,18 @@ var cleanUrl = function(url) {
 }
 
 var addToDropDown = function(data) {
+    let name = 'Name'
+    let title = 'Title'
+    if(data.append != undefined){
+        name = data.append + name
+        title = data.append + title
+    }
+    let features = data.features
     var myOptions = [];
-    console.log(data)
-    for (var i = 0; i < data.length; i++) {
-        console.log(data[i])
+    for (var i = 0; i < features.length; i++) {
         let entry = new Object()
-        entry.text = data[i]['name']
-        entry.value = data[i]['name']
+        entry.text = features[i][title][0]
+        entry.value = features[i][name][0]
         myOptions.push(entry)
     }
     $('#layer_name_dropdown').empty()
@@ -213,43 +256,71 @@ var addToDropDown = function(data) {
     });
 }
  
+var getFeatureTypes = function(json) {
+    let x = findPaths(json,'FeatureType')
+    let y = findPaths(json,'wfs:FeatureType')
+    let data = new Object();
+    let features = json
+    if(x.length > 0){
+        let path = x[0].split('/')
+        for (let i = 0; i < path.length; i++) {
+            features = features[path[i]]
+        }
+    }
+    if(y.length > 0){
+        let path = y[0].split('/')
+        for (let i = 0; i < path.length; i++) {
+            features = features[path[i]]
+            data.append = 'wfs:'
+        }
+    }
+    data.features = features;
+    return data
+}
+
+var getData = function(data) {
+    return fetch(data)
+        .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              return Promise.resolve(response)
+            } else {
+              var error = new Error(response.statusText || response.status)
+              error.response = response
+              return Promise.reject(error)
+            }
+        })
+        .catch((err) => {
+            CursorAuto()
+            alert("Unable to retrieve layers from WFS please continue");
+            handle_request_fail()
+            return Promise.reject("Unable to retrieve layers from WFS please continue");
+        })
+        .then((res) => {
+            return res.text();
+        })
+        .then((xml) => {
+            let f = document.getElementsByClassName("wfs_select")
+            f[0].style.display = 'block'
+            f[0].id = 'wfs_selector'
+            parseString(xml,{trim: true}, function (err, result) {
+            data = getFeatureTypes(result)
+            })
+        addToDropDown(data)
+    }).finally(()=> {
+        CursorAuto()
+    });
+}
+
 let f = document.getElementsByClassName("wfs_select")
 f[0].style.display = 'none'
 
-function getCurrentURLPath() {
-    let current = window.location.href
-    let base = current.split('/').splice(0,3).join('/')
-    return base
-}
-
 function getLayers() {
-    base_url = getCurrentURLPath()
+    let proxy = 'https://cors-anywhere.herokuapp.com/'
+    handle_loading()
     let url = $("#field-image-url").val().trim()
     url = cleanUrl(url)
-    wfs_url = url.replaceAll('&','@')
-    fetch_url = `${base_url}/api/3/action/get_wfs_layers?url=${wfs_url}`
-    handle_loading()
-    fetch(fetch_url)
-        .then(
-            function(response) {
-                if (response.status !== 200) {
-                    alert("Unable to retrieve layers from WFS please continue");
-                    handle_request_fail()
-                    return;
-            }
-            // Examine the text in the response
-            response.json().then(function(data) {
-                result = data.result
-                addToDropDown(result)
-            });
-            }
-        )
-        .catch(function(err) {
-            console.log('Fetch Error :-S', err);
-        })
-        .finally(()=> {
-            CursorAuto()
-        });
+    getData(proxy.concat(url))
+    CursorAuto()
 }
 
 function formSubmit() {

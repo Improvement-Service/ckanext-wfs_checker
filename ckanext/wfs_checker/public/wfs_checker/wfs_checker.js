@@ -196,9 +196,7 @@ var cleanUrl = function(url) {
 
 var addToDropDown = function(data) {
     var myOptions = [];
-    console.log(data)
     for (var i = 0; i < data.length; i++) {
-        console.log(data[i])
         let entry = new Object()
         entry.text = data[i]['name']
         entry.value = data[i]['name']

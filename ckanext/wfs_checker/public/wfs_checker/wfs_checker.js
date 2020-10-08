@@ -224,7 +224,8 @@ function getLayers() {
     base_url = getCurrentURLPath()
     let url = $("#field-image-url").val().trim()
     url = cleanUrl(url)
-    wfs_url = url.replaceAll('&','@')
+    // wfs_url = url.replaceAll('&','@') not supported yet?
+    let wfs_url = url.split("&").join('@');
     fetch_url = `${base_url}/api/3/action/get_wfs_layers?url=${wfs_url}`
     handle_loading()
     fetch(fetch_url)

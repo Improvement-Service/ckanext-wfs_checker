@@ -103,6 +103,12 @@ $(document).ready(function() {
         layer_dropdown_enable()
     }
 
+    url_value = $("#field-image-url").val()
+    console.log(url_value)
+    if(document.getElementById('saveBtn')){
+        is_wfs_display_block()
+    }
+
 })
 
 //emptys multi select text box

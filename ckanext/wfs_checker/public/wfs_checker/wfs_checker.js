@@ -169,25 +169,65 @@ function matchRuleShort(str, rule) {
     return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
 }
 //cleans the url returning it has a get capabilities request, keeps id/authkey token if needed.
+// var cleanUrl = function(url) {
+//     url = String(url)
+//     url = decodeURIComponent(url);
+//     var token = null
+//     var splitUrl = []
+//     if (url.includes('&')) {
+//         splitUrl = url.split('&')
+//     } else {
+//         splitUrl = [url]
+//     }
+//     console.log(splitUrl)
+//     if (url.includes('authkey=')) {
+//         splitUrl.forEach((element) => {
+//             if (matchRuleShort(element, 'authkey=*')) {
+//                 token = element;
+//             }
+//         })
+//     }
+//     if (url.includes('id=')) {
+//         console.log('contains_id')
+//         console.log(splitUrl)
+//         splitUrl.forEach((element) => {
+//             console.log('here')
+//             console.log('element',element)
+//             if (matchRuleShort(element, 'id=*')) {
+//                 token = element;
+//                 console.log(token)
+//             }
+//         })
+//     }
+//
+//     if(url.includes('?')){
+//         url = url.split('?')[0]
+//     }
+//     url = url + '?request=getcapabilities&service=wfs'
+//     if(token != null){
+//         url = url + '&' + token;
+//     }
+//     console.log(url)
+//     return url
+// }
+
+function match_on(str, key) {
+    var re = RegExp(`(${key}=([a-z-A-Z-0-9_"£$%*^~])+)`)
+    return re.exec(str);
+}
+
+function test_on(str, key) {
+    var re = RegExp(`(${key}=([a-z-A-Z-0-9_"£$%*^~])+)`)
+    return re.test(str);
+}
+
 var cleanUrl = function(url) {
-    url = String(url)
-    url = decodeURIComponent(url);
-    let token = null
-    if (url.includes('&')) {
-        let splitUrl = url.split('&')
-        if (url.includes('authkey=')) {
-            splitUrl.forEach((element) => {
-                if (matchRuleShort(element, 'authkey=*')) {
-                    token = element;
-                }
-            })
-        }
-        if (url.includes('id=')) {
-            splitUrl.forEach((element) => {
-                if (matchRuleShort(element, 'id=*')) {
-                    token = element;
-                }
-            })
+    url = decodeURIComponent(String(url));
+    var token = null
+    tokens = ['authkey', 'id', 'key', 'token']
+    for (var i in tokens) {
+        if (test_on(url, tokens[i]) && token == null){
+            token = match_on(url, tokens[i])[0]
         }
     }
     if(url.includes('?')){
@@ -197,6 +237,7 @@ var cleanUrl = function(url) {
     if(token != null){
         url = url + '&' + token;
     }
+    console.log(url)
     return url
 }
 
@@ -233,6 +274,7 @@ function getLayers() {
     // wfs_url = url.replaceAll('&','@') not supported yet?
     let wfs_url = url.split("&").join('@');
     fetch_url = `${base_url}/api/3/action/get_wfs_layers?url=${wfs_url}`
+    console.log(fetch_url)
     handle_loading()
     fetch(fetch_url)
         .then(
@@ -244,6 +286,7 @@ function getLayers() {
             }
             // Examine the text in the response
             response.json().then(function(data) {
+                console.log(data)
                 result = data.result
                 addToDropDown(result)
             });

@@ -104,7 +104,6 @@ $(document).ready(function() {
     }
 
     url_value = $("#field-image-url").val()
-    console.log(url_value)
     if(document.getElementById('saveBtn')){
         is_wfs_display_block()
     }
@@ -237,7 +236,6 @@ var cleanUrl = function(url) {
     if(token != null){
         url = url + '&' + token;
     }
-    console.log(url)
     return url
 }
 
@@ -274,7 +272,6 @@ function getLayers() {
     // wfs_url = url.replaceAll('&','@') not supported yet?
     let wfs_url = url.split("&").join('@');
     fetch_url = `${base_url}/api/3/action/get_wfs_layers?url=${wfs_url}`
-    console.log(fetch_url)
     handle_loading()
     fetch(fetch_url)
         .then(
@@ -286,7 +283,6 @@ function getLayers() {
             }
             // Examine the text in the response
             response.json().then(function(data) {
-                console.log(data)
                 result = data.result
                 addToDropDown(result)
             });

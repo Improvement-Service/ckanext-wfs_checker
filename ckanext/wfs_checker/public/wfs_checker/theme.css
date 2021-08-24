@@ -49,3 +49,5 @@
 content:"* ";
 color: lightcoral;
 }
+
+select:invalid { color: gray; }

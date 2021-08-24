@@ -7,15 +7,12 @@ def get_wfs_layers(context, data_dict=None):
     if 'url' in data_dict.keys():
         url = str(data_dict['url'])
         url = url.replace('@', '&')
-        print(url)
         wfs = WebFeatureService(url=url,  version='1.1.0')
     else:
         return "Error: No url field provided. Please specify an url."
 
     results = []
     wfs_results = list(wfs.contents)
-    print(wfs)
-    print(wfs_results)
     for layer in wfs_results:
         results.append({
             'name': layer

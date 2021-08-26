@@ -7,7 +7,7 @@ const config = {
    compress: true,
    port: 9000
  },
-  entry: `${ __dirname }/wfs_checker.js`,
+  entry: `${ __dirname }/src/main.js`,
   output: {
     filename: 'bundle.js',
     path: `${ __dirname }/`

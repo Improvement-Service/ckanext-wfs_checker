@@ -4,6 +4,7 @@
 {% set errors = errors or {} %}
 {% set action = form_action or h.url_for(dataset_type ~ '_resource.new', id=pkg_name) %}
 {% set pkg_title = pkg_name.title().replace('_',' ')[:pkg_name.title().replace('_',' ').find('-')] %}
+
 <form id="resource-edit" class="dataset-form dataset-resource-form form-horizontal" method="post" action="{{ action }}"
       data-module="basic-form resource-form" enctype="multipart/form-data">
     {% block stages %}
@@ -27,66 +28,81 @@
         url_label=_('URL'))
         }}
   {% endblock %}
-
-        {% if data.is_wfs == 'yes' %}
-        <div class="form-group row" id="is_wfs_group">
-            <label for="is_wfs" class="col-form-label required">Is WFS</label>
-                <select id="is_wfs" name="is_wfs" class="form-control control-medium">
-                    <option value="no">No</option>
-                    <option value="yes" selected="selected">Yes</option>
+    {% if data.service_type == 'null' %}
+        {% set service_type_style = 'display:block' %}
+    {% else %}
+        {% set service_type_style = 'display:none' %}
+    {% endif %}
+        <div class="form-group row" id="service_type_group" style='{{service_type_style}}'">
+            <label for="service_type" class="col-form-label required">Service Type</label>
+                <select id="service_type" name="service_type" class="form-control control-medium">
+                    {% if data.service_type == 'other' %}
+                    <option value="null" disabled selected>Select Service Type</option>
+                    <option value="wfs">Web Feature Service (WFS)</option>
+                    <option value="rest" >ESRI Rest Service</option>
+                    <option value="other" selected >Other</option>
+                    {% elif data.service_type == 'wfs' %}
+                    <option value="null" disabled selected>Select Service Type</option>
+                    <option value="wfs" selected >Web Feature Service (WFS)</option>
+                    <option value="rest">ESRI Rest Service</option>
+                    <option value="other">Other</option>
+                    {% elif data.service_type == 'rest' %}
+                    <option value="null" disabled selected>Select Service Type</option>
+                    <option value="wfs">Web Feature Service (WFS)</option>
+                    <option value="rest" selected>ESRI Rest Service</option>
+                    <option value="other">Other</option>
+                    {% else %}
+                    <option value="null" disabled selected>Select Service Type</option>
+                    <option value="wfs">Web Feature Service (WFS)</option>
+                    <option value="rest">ESRI Rest Service</option>
+                    <option value="other">Other</option>
+                    {% endif %}
                 </select>
-          <div class="info-block ">
+            {% if data.service_type == 'wfs' or data.service_type == '' %}
+                {% set service_type_info_style = 'display:block' %}
+            {% else %}
+                {% set service_type_info_style = 'display:none' %}
+            {% endif %}
+            <div id="service_type_info_box_1" class="info-block" style="{{service_type_info_style}}">
                 <i class="fa fa-info-circle"></i>
-                If using WFS click the "GET LAYERS" button and wait a few seconds for your layers to appear.
+                Click the "Get Layers" button and wait a few seconds for your layers to appear.
             </div>
         </div>
+
+        {% if data.layer_name %}
+            {% set layer_selector_style = 'display:block' %}
+            {% set layer_data_value = data.layer_name %}
+            {% set layer_data_name = data.layer_name  %}
         {% else %}
-        <div class="form-group row" style="display: none" id="is_wfs_group">
-            <label for="is_wfs" class="col-form-label required">Is WFS</label>
-            <div class="input-group">
-                <select id="is_wfs" name="is_wfs" class="form-control control-medium">
-                    <option value="no" selected="selected">No</option>
-                    <option value="yes">Yes</option>
-                </select>
-            </div>
-            <div class="info-block ">
-                <i class="fa fa-info-circle"></i>
-                If using WFS click the "GET LAYERS" button and wait a few seconds for your layers to appear.
-            </div>
-        </div>
+            {% set layer_selector_style = 'display:none' %}
+            {% set layer_data_value = 'null' %}
+            {% set layer_data_name = 'Click "Get Layers" Button To Populate Dropdown.'  %}
         {% endif %}
 
-        {% if data.is_wfs|length > 1 %}
-            <div class="form-group control-medium wfs_select control-select" id="wfs_selector">
-        {% else %}
-            <div class="form-group control-medium wfs_select control-select" style="display: none" id="wfs_selector">
-        {% endif %}
+        <div class="form-group control-medium wfs_select control-select" style="{{ layer_selector_style }}" id="layer_selector">
                 <label class="control-label" for="layer_name_dropdown">Choose layer</label>
                 <div class="controls ">
                     <div class="input-group">
                         <select id="layer_name_dropdown" name="layer_name" class="form-control">
-                            <option value={{data.layer_name}}>
-                                {{data.layer_name}}
+                            <option value={{ layer_data_value }}>
+                                {{ layer_data_name }}
                             </option>
                         </select>
                         <span style="padding-top: 2px" class="input-group-btn">
-                            <button class="btn btn-success submitBtn" id='get_layers_btn' type="button">GET LAYERS</button>
+                            <button class="btn btn-success submitBtn" id='get_layers_btn' type="button">Get Layers</button>
                         </span>
                     </div>
-                    <div class="info-block ">
+                    <div id="layer_name_info_block" class="info-block ">
                         <i class="fa fa-info-circle"></i>
                         If you need to supply multiple layers from this WFS, please load them individually (as
-                        separate resources). While the former approach is preferable, if you need to include many
-                        layers, an
-                        alternative is to leave this box empty and provide details in the description box below
+                        separate resources).
                     </div>
                 </div>
             </div>
 
-
             {% block basic_fields_name %}
             {{ form.input('name', id='field-name', label=_("""Resource name"""), placeholder=_('eg. Vacant & Derelict Land'),
-            value=data.name, error=errors.name, classes=['control-full'],is_required=False) }}
+            value=data.name, error=errors.name, classes=['control-full'],is_required=True) }}
             {% endblock %}
 
             {% block resource_custom_uploader_name %}
@@ -96,8 +112,8 @@
 
             {% block resource_custom_department_name %}
             {{ form.input('department_name',label=_('Department'),id='resource-department_name',
-            placeholder=_('GIS department'),value=data.department_name,error=errors.department_name,
-            classes=['control-medium'],is_required=true) }}
+            placeholder=_('GIS department'),value=data.department_name,error=errors.department_name,is_required=true,
+            classes=['control-medium']) }}
             {% endblock %}
 
             {% call form.select('digit_background',label=_('Digitisation Background'), id='digit_background',
@@ -121,7 +137,7 @@
             {% endcall %}
 
                {% block basic_fields_description %}
-                  {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Please provide any additional details that will enable us to make sense of what you are providing e.g. names of layers to be included, any codes that we may need to understand, any specific digitisation methodologies that need to be considered.'), value=data.description, error=errors.description) }}
+                  {{ form.markdown('description', id='field-description' ,is_required=true, label=_('Description'), placeholder=_('Please provide any additional details that will enable us to make sense of what you are providing e.g. names of layers to be included, any codes that we may need to understand, any specific digitisation methodologies that need to be considered.'), value=data.description, error=errors.description) }}
               {% endblock %}
 
             <div class=terms-and-conditions>Terms & Conditions: By uploading this dataset to the Improvement Service
@@ -155,7 +171,7 @@
 
             {{ form.required_message() }}
 
-            <div>
+   <div>
                 <button type="button" id='checkBtn' class="btn btn-primary">Agree to Terms & Conditions and Contribute
                     Data
                 </button>
@@ -222,4 +238,3 @@
     <script src="../../../wfs_checker/bundle.js" type='text/javascript'></script>
     <link rel="stylesheet" type="text/css" href="../../../wfs_checker/theme.css">
 {% endblock %}
-

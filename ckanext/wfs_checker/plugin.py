@@ -1,21 +1,23 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+import json 
 from owslib.wfs import WebFeatureService
+from .esri_rest import ESRI_REST
 
 @toolkit.side_effect_free
 def get_wfs_layers(context, data_dict=None):
-    if 'url' in data_dict.keys():
-        url = str(data_dict['url'])
-        url = url.replace('@', '&')
-        print(url)
-        wfs = WebFeatureService(url=url,  version='1.1.0')
+    data = json.loads(data_dict['json'])
+    if 'url' in data.keys():
+        url = str(data['url'])
+        try:
+            wfs = WebFeatureService(url=url,  version='1.1.0')
+        except Exception as e:
+            return {'error':'Invalid WFS'}
     else:
-        return "Error: No url field provided. Please specify an url."
+        return {'error':"No url field provided. Please specify an url."}
 
     results = []
     wfs_results = list(wfs.contents)
-    print(wfs)
-    print(wfs_results)
     for layer in wfs_results:
         results.append({
             'name': layer
@@ -23,11 +25,29 @@ def get_wfs_layers(context, data_dict=None):
     
     return results
 
+@toolkit.side_effect_free
+def get_esri_rest_layers(context, data_dict=None):
+    data = json.loads(data_dict['json'])
+    if 'url' in data.keys():
+        url = str(data['url'])
+        try:
+            esri_rest = ESRI_REST(url)
+            resp = esri_rest.get_layers()
+            return resp
+        except Exception as e:
+            print(e)
+            return {'error': str(e) }
+    else:
+        return {'error':"No url field provided. Please specify an url."}
+
+
+
+
 class Wfs_CheckerPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.interfaces.IActions)
-    # IConfigurer
-
+    
+    #IConfigurer
     def update_config(self, config_):
         toolkit.add_template_directory(config_, 'templates')
         toolkit.add_public_directory(config_, 'public')
@@ -35,4 +55,5 @@ class Wfs_CheckerPlugin(plugins.SingletonPlugin):
 
     def get_actions(self):
         # Registers the custom API method defined above
-        return {'get_wfs_layers': get_wfs_layers}
+        return {'get_wfs_layers': get_wfs_layers,
+                'get_esri_rest_layers': get_esri_rest_layers}

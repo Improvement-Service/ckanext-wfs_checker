@@ -46,6 +46,12 @@
 }
 
 .required:before {
-content:"* ";
-color: lightcoral;
+    content:"* ";
+    color: lightcoral;
 }
+
+.hidden {
+    display:none;
+}
+
+select:invalid { color: gray; }

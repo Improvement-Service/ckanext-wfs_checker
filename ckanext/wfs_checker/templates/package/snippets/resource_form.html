@@ -28,12 +28,12 @@
         url_label=_('URL'))
         }}
   {% endblock %}
-        <div class="form-group row" id="service_type_group"
-        {% if data.service_type == '' %}
-            style="display: none" >
-        {% else %}
-            style="display: none" >
-        {% endif %}
+    {% if data.service_type == 'null' %}
+        {% set service_type_style = 'display:block' %}
+    {% else %}
+        {% set service_type_style = 'display:none' %}
+    {% endif %}
+        <div class="form-group row" id="service_type_group" style='{{service_type_style}}'">
             <label for="service_type" class="col-form-label required">Service Type</label>
                 <select id="service_type" name="service_type" class="form-control control-medium">
                     {% if data.service_type == 'other' %}
@@ -58,36 +58,44 @@
                     <option value="other">Other</option>
                     {% endif %}
                 </select>
-          <div class="info-block ">
+            {% if data.service_type == 'wfs' or data.service_type == '' %}
+                {% set service_type_info_style = 'display:block' %}
+            {% else %}
+                {% set service_type_info_style = 'display:none' %}
+            {% endif %}
+            <div id="service_type_info_box_1" class="info-block" style="{{service_type_info_style}}">
                 <i class="fa fa-info-circle"></i>
-                If using WFS click the "GET LAYERS" button and wait a few seconds for your layers to appear.
+                Click the "Get Layers" button and wait a few seconds for your layers to appear.
             </div>
         </div>
 
-
-        {% if data.service_type|length > 1 %}
-            <div class="form-group control-medium wfs_select control-select" id="wfs_selector">
+        {% if data.layer_name %}
+            {% set layer_selector_style = 'display:block' %}
+            {% set layer_data_value = data.layer_name %}
+            {% set layer_data_name = data.layer_name  %}
         {% else %}
-            <div class="form-group control-medium wfs_select control-select" style="display: none" id="wfs_selector">
+            {% set layer_selector_style = 'display:none' %}
+            {% set layer_data_value = 'null' %}
+            {% set layer_data_name = 'Click "Get Layers" Button To Populate Dropdown.'  %}
         {% endif %}
+
+        <div class="form-group control-medium wfs_select control-select" style="{{ layer_selector_style }}" id="layer_selector">
                 <label class="control-label" for="layer_name_dropdown">Choose layer</label>
                 <div class="controls ">
                     <div class="input-group">
                         <select id="layer_name_dropdown" name="layer_name" class="form-control">
-                            <option value={{data.layer_name}}>
-                                {{data.layer_name}}
+                            <option value={{ layer_data_value }}>
+                                {{ layer_data_name }}
                             </option>
                         </select>
                         <span style="padding-top: 2px" class="input-group-btn">
-                            <button class="btn btn-success submitBtn" id='get_layers_btn' type="button">GET LAYERS</button>
+                            <button class="btn btn-success submitBtn" id='get_layers_btn' type="button">Get Layers</button>
                         </span>
                     </div>
-                    <div class="info-block ">
+                    <div id="layer_name_info_block" class="info-block ">
                         <i class="fa fa-info-circle"></i>
                         If you need to supply multiple layers from this WFS, please load them individually (as
-                        separate resources). While the former approach is preferable, if you need to include many
-                        layers, an
-                        alternative is to leave this box empty and provide details in the description box below
+                        separate resources).
                     </div>
                 </div>
             </div>

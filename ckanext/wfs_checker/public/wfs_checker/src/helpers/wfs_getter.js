@@ -73,7 +73,6 @@ export class WFS_getter {
         .then(this.handleResponse)
         .then((resp) =>{
             if (resp.status_code = 200){
-                console.log(resp)
                 if (resp.result.error){
                     console.error(resp.result.error)
                     ui_funcs.handle_request_fail()

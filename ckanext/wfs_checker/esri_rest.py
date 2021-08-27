@@ -122,19 +122,12 @@ class ESRI_REST():
         return result
 
     def get_layers_from_group_layer(self, routes, params, data_dict):
-        print('here')
         result = []
         service_url = self.create_layer_url(routes[:-1], params)
         data = self._get_data(service_url)
-        # print(data['layers']) 
-
         sub_layer_ids = [ x['id'] for x in data_dict['subLayers']]
-        print('$$$$$$$$$$$$$$$$$$$$$$$')
-        print(sub_layer_ids)
         for layer in data['layers']:
-            print(layer)
             if layer['id'] in sub_layer_ids and layer['type'] == 'Feature Layer':
-
                 url = self.create_url([*routes[:-1],str(layer['id'])], [])
                 obj = {
                     'name' : layer['name'],

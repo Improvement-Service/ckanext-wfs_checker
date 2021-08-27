@@ -32,7 +32,7 @@ export class WFS_getter {
         for (var i = 0; i < data.length; i++) {
             let entry = new Object()
             entry.text = data[i]['name']
-            entry.value = data[i]['url']
+            entry.value = data[i]['id']
             options.push(entry)
         }
         return options 
@@ -55,7 +55,6 @@ export class WFS_getter {
         .then((resp) =>{
             if (resp.status_code = 200){
                 if (resp.result.error){
-                    console.error(resp.result.error)
                     ui_funcs.handle_request_fail()
                     throw resp.result.error
                 } else{
@@ -69,6 +68,7 @@ export class WFS_getter {
             }
         })
         .catch(error => {
+            ui_funcs.error_note('layer_name_dropdown_group', error)
             console.warn(error);
             ui_funcs.handle_request_fail()
         }).finally(()=> {

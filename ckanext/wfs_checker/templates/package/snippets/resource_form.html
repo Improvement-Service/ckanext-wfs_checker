@@ -28,7 +28,7 @@
         url_label=_('URL'))
         }}
   {% endblock %}
-    {% if data.service_type == 'null' %}
+    {% if data.service_type and data.service_type != 'null'  %}
         {% set service_type_style = 'display:block' %}
     {% else %}
         {% set service_type_style = 'display:none' %}
@@ -37,17 +37,17 @@
             <label for="service_type" class="col-form-label required">Service Type</label>
                 <select id="service_type" name="service_type" class="form-control control-medium">
                     {% if data.service_type == 'other' %}
-                    <option value="null" disabled selected>Select Service Type</option>
+                    <option value="null" disabled>Select Service Type</option>
                     <option value="wfs">Web Feature Service (WFS)</option>
                     <option value="rest" >ESRI Rest Service</option>
                     <option value="other" selected >Other</option>
                     {% elif data.service_type == 'wfs' %}
-                    <option value="null" disabled selected>Select Service Type</option>
+                    <option value="null" disabled>Select Service Type</option>
                     <option value="wfs" selected >Web Feature Service (WFS)</option>
                     <option value="rest">ESRI Rest Service</option>
                     <option value="other">Other</option>
                     {% elif data.service_type == 'rest' %}
-                    <option value="null" disabled selected>Select Service Type</option>
+                    <option value="null" disabled>Select Service Type</option>
                     <option value="wfs">Web Feature Service (WFS)</option>
                     <option value="rest" selected>ESRI Rest Service</option>
                     <option value="other">Other</option>
@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        {% if data.layer_name %}
+        {% if data.layer_name  and data.layer_name != 'null' %}
             {% set layer_selector_style = 'display:block' %}
             {% set layer_data_value = data.layer_name %}
             {% set layer_data_name = data.layer_name  %}
@@ -82,7 +82,7 @@
         <div class="form-group control-medium wfs_select control-select" style="{{ layer_selector_style }}" id="layer_selector">
                 <label class="control-label" for="layer_name_dropdown">Choose layer</label>
                 <div class="controls ">
-                    <div class="input-group">
+                    <div id="layer_name_dropdown_group" class="input-group">
                         <select id="layer_name_dropdown" name="layer_name" class="form-control">
                             <option value={{ layer_data_value }}>
                                 {{ layer_data_name }}

@@ -12,7 +12,7 @@ def get_wfs_layers(context, data_dict=None):
         try:
             wfs = WebFeatureService(url=url,  version='1.1.0')
         except Exception as e:
-            return {'error':'Invalid WFS'}
+            return {'error':'URL provided is not a valid wfs'}
     else:
         return {'error':"No url field provided. Please specify an url."}
 

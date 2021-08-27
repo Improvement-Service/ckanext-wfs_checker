@@ -36,6 +36,15 @@ class Webservice_Checker {
     set_up() {
         listeners.set_up_all_listeners()
     }
+
+    set_data_from_form_values(){
+        this.service_type = $('#service_type').val()
+        if (this.service_type == 'null'){
+            this.is_file = true
+        } else {
+            this.is_file = false
+        }
+    }
     
     checkValues() {
         let url = document.getElementById('field-image-url')
@@ -53,7 +62,7 @@ class Webservice_Checker {
         for (let i = 0; i < form.length; i++) {
             let element = form[i];
             if (element.value == 'null' || element.value.length < 1) {
-                if (element.name == 'service_type' && is_file == true) {
+                if (element.name == 'service_type' && this.is_file == true) {
                 } else {
                     errors.push(element.name)
                 }

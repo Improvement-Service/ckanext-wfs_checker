@@ -4,7 +4,7 @@ import json
 class ESRI_REST():
     def __init__(self, url):
         if 'rest/services' not in url:
-            raise ValueError('url provided is not valid')
+            raise ValueError('URL provided is not a valid ESRI Rest Service.')
         self.url = url
         self.base_url = self._get_base_url()
         self.params = self._get_params()
@@ -122,16 +122,40 @@ class ESRI_REST():
         return result
 
     def get_layers_from_group_layer(self, routes, params, data_dict):
+        print('here')
         result = []
-        for layer in data_dict['subLayers']:
-            url = self.create_url([*routes[:-1],str(layer['id'])], [])
-            obj = {
+        service_url = self.create_layer_url(routes[:-1], params)
+        data = self._get_data(service_url)
+        # print(data['layers']) 
+
+        sub_layer_ids = [ x['id'] for x in data_dict['subLayers']]
+        print('$$$$$$$$$$$$$$$$$$$$$$$')
+        print(sub_layer_ids)
+        for layer in data['layers']:
+            print(layer)
+            if layer['id'] in sub_layer_ids and layer['type'] == 'Feature Layer':
+
+                url = self.create_url([*routes[:-1],str(layer['id'])], [])
+                obj = {
                     'name' : layer['name'],
                     'id': layer['id'],
                     'url':url
-                    }
-            result.append(obj)
+                }
+                result.append(obj)
         return result
+
+
+
+        # result = []
+        # for layer in data_dict['subLayers']:
+        #     url = self.create_url([*routes[:-1],str(layer['id'])], [])
+        #     obj = {
+        #             'name' : layer['name'],
+        #             'id': layer['id'],
+        #             'url':url
+        #             }
+        #     result.append(obj)
+        # return result
     
     def get_layer_from_feature_layer(self, routes, params, data_dict):
         url = self.create_url(routes, [])
@@ -158,10 +182,9 @@ class ESRI_REST():
         elif route_type == 'Group Layer':
             layers = self.get_layers_from_group_layer(routes, params, data_dict)
         elif route_type == 'Folder':
-            layers = self.get_layers_from_folder(routes, params, data_dict)
-            # raise ValueError('Url provided is not a service, group layer or Feature layer please provide a valid url')
+            raise ValueError('ESRI Rest Service URL Must be a Service, Group Layer or Feature Layer')
         else:
-            raise ValueError('Url provided is not valid.')
+            raise ValueError('ESRI Rest Service URL Must be a Service, Group Layer or Feature Layer')
         return layers
         
         

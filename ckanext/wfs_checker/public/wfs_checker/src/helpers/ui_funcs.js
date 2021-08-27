@@ -26,6 +26,14 @@ export function layer_name_info_box_wfs_content(){
     $("#layer_name_info_block").html(`${icon} ${text}`)
 }
 
+export function error_note(attr_id, text){
+    var html = `<span class="error-block">${text}</span>` 
+    $(`#${attr_id}`).after(html)
+}
+
+export function clear_all_error_notes(){
+    $( ".error-block" ).remove();
+}
 
 export function service_type_display_none() {
     $("#service_type_group").css('display', 'none')

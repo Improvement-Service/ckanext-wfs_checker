@@ -88,6 +88,7 @@ export class WFS_getter {
             }
         })
         .catch(error => {
+            ui_funcs.error_note('layer_name_dropdown_group', error)
             console.warn(error);
             ui_funcs.handle_request_fail()
         }).finally(()=> {

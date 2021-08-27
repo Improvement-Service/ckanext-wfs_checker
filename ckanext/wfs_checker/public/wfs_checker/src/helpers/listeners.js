@@ -17,6 +17,7 @@ export function remove_link_btn_listener(webserviceChecker){
         ui_funcs.layer_selector_disable()
         ui_funcs.selectElement('service_type','null')
         ui_funcs.reset_layer_dropdown()
+        ui_funcs.clear_all_error_notes()
         webserviceChecker.set_is_file(true)
     }
 }
@@ -25,6 +26,7 @@ export function service_selector_listener(webserviceChecker){
     $('#service_type').change(function() {
         var val = $(this).val()
         ui_funcs.reset_layer_dropdown()
+        ui_funcs.clear_all_error_notes()
         if (val == 'wfs') {
             webserviceChecker.set_service_type('wfs')
             ui_funcs.enable_get_layer_btn()
@@ -55,8 +57,10 @@ export function service_selector_listener(webserviceChecker){
 
 export function get_layers_btn_listener(webserviceChecker){
     $('#get_layers_btn').click(function() {
+        ui_funcs.clear_all_error_notes()
         var url_value = $("#field-image-url").val()
         if (url_value != '' && isURL(url_value)){
+            webserviceChecker.set_data_from_form_values()
             if (webserviceChecker.get_service_type() == 'wfs' && webserviceChecker.get_is_file() == false ) {
                 ui_funcs.CursorLoading()
                 var wfs = new wfs_getter.WFS_getter(url_value)

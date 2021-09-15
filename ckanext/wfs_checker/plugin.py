@@ -38,7 +38,8 @@ def get_esri_rest_layers(context, data_dict=None):
             resp = esri_rest.get_layers()
             return resp
         except Exception as e:
-            return {'error': str(e) }
+            log.error(e)
+            return {'error': 'Url is not a valid ESRI rest service' }
     else:
         return {'error':"No url field provided. Please specify an url."}
 

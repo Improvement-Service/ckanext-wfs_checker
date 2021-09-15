@@ -26,7 +26,11 @@ class ESRI_REST():
             x = x[1].split('?')[0]
         else: 
             x = x[1]
-        return list(filter(None, x.split('/')))
+        routes = list(filter(None, x.split('/')))
+        for route in routes:
+            if route.lower() in ['layers', 'legends']:
+                routes.remove(route)
+        return routes
 
     def _get_data(self, url):
         x = requests.get(url)
@@ -122,19 +126,12 @@ class ESRI_REST():
         return result
 
     def get_layers_from_group_layer(self, routes, params, data_dict):
-        print('here')
         result = []
         service_url = self.create_layer_url(routes[:-1], params)
         data = self._get_data(service_url)
-        # print(data['layers']) 
-
         sub_layer_ids = [ x['id'] for x in data_dict['subLayers']]
-        print('$$$$$$$$$$$$$$$$$$$$$$$')
-        print(sub_layer_ids)
         for layer in data['layers']:
-            print(layer)
             if layer['id'] in sub_layer_ids and layer['type'] == 'Feature Layer':
-
                 url = self.create_url([*routes[:-1],str(layer['id'])], [])
                 obj = {
                     'name' : layer['name'],
@@ -143,19 +140,6 @@ class ESRI_REST():
                 }
                 result.append(obj)
         return result
-
-
-
-        # result = []
-        # for layer in data_dict['subLayers']:
-        #     url = self.create_url([*routes[:-1],str(layer['id'])], [])
-        #     obj = {
-        #             'name' : layer['name'],
-        #             'id': layer['id'],
-        #             'url':url
-        #             }
-        #     result.append(obj)
-        # return result
     
     def get_layer_from_feature_layer(self, routes, params, data_dict):
         url = self.create_url(routes, [])

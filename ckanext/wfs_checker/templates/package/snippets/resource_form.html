@@ -72,7 +72,11 @@
         {% if data.layer_name  and data.layer_name != 'null' %}
             {% set layer_selector_style = 'display:block' %}
             {% set layer_data_value = data.layer_name %}
-            {% set layer_data_name = data.layer_name  %}
+            {% set layer_data_name = h.get_esri_rest_helper(data.url, data.layer_name) %}
+        {% elif data.service_type and data.service_type != 'null'%}
+            {% set layer_selector_style = 'display:block' %}
+            {% set layer_data_value = 'null' %}
+            {% set layer_data_name = 'Click "Get Layers" Button To Populate Dropdown.'  %}
         {% else %}
             {% set layer_selector_style = 'display:none' %}
             {% set layer_data_value = 'null' %}

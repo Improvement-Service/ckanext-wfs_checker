@@ -137,3 +137,5 @@ export function createErrorNotification(errors)  {
     let form = document.getElementById('resource-edit')
     form.prepend(div)
 }
+
+// export function show(layers)

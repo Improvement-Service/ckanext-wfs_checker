@@ -26,7 +26,11 @@ class ESRI_REST():
             x = x[1].split('?')[0]
         else: 
             x = x[1]
-        return list(filter(None, x.split('/')))
+        routes = list(filter(None, x.split('/')))
+        for route in routes:
+            if route.lower() in ['layers', 'legends']:
+                routes.remove(route)
+        return routes
 
     def _get_data(self, url):
         x = requests.get(url)
@@ -136,19 +140,6 @@ class ESRI_REST():
                 }
                 result.append(obj)
         return result
-
-
-
-        # result = []
-        # for layer in data_dict['subLayers']:
-        #     url = self.create_url([*routes[:-1],str(layer['id'])], [])
-        #     obj = {
-        #             'name' : layer['name'],
-        #             'id': layer['id'],
-        #             'url':url
-        #             }
-        #     result.append(obj)
-        # return result
     
     def get_layer_from_feature_layer(self, routes, params, data_dict):
         url = self.create_url(routes, [])

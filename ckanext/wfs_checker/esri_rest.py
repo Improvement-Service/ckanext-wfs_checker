@@ -13,17 +13,10 @@ class ESRI_REST():
     def _get_base_url(self):
         return f"{self.url.split('rest/services')[0]}rest/services"
 
-<<<<<<< HEAD
-    def _get_params(self):
-        if '?' in self.url and self.url.split('?')[1].strip != "":
-            params = self.url.split('?')[1].split("&")
-            return [{'key': p.split('=')[0], 'value':p.split('=')[1]} for p in params]
-=======
     def _get_params(self, url):
         if '?' in url and url.split('?')[1].strip != "":
             params = url.split('?')[1].split("&")
             return [{'key':p.split('=')[0], 'value':p.split('=')[1]} for p in params]
->>>>>>> e5a8fe381906ddc692f2c83593d93a249fb8ec5f
         return []
 
     def _get_route(self, url):

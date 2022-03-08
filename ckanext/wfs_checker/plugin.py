@@ -119,6 +119,5 @@ class Wfs_CheckerPlugin(plugins.SingletonPlugin):
         """ Should return a dict, the keys being the name of 
             the logic function and the values being the functions themselves.
         """
-        # Registers the custom API method defined above
         return {'get_wfs_layers': get_wfs_layers,
                 'get_esri_rest_layers': get_esri_rest_layers}

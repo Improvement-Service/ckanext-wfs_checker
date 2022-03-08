@@ -19,17 +19,21 @@ def get_wfs_layers(context, data_dict=None):
     Returns:
         [dictionary]: list of dictionarys
     """
-    data = json.loads(data_dict['json'])
-    if 'url' in data.keys():
-        url = str(data['url'])
-        try:
-            wfs = WebFeatureService(url=url, version='1.1.0')
-        except RuntimeError as error:
-            LOGGER.error(error)
-            return {'error':'URL provided is not a valid wfs'}
+    data = data_dict.get('json')
+    if data is not None:
+        json_data = json.loads(data)
+        if 'url' in json_data.keys():
+            url = str(json_data['url'])
+            try:
+                wfs = WebFeatureService(url=url, version='1.1.0')
+                print(wfs)
+            except Exception as error:
+                LOGGER.error(error)
+                return {'error': 'URL provided is not a valid wfs'}
+        else:
+            return {'error': "No url field provided. Please specify an url."}
     else:
-        return {'error':"No url field provided. Please specify an url."}
-
+        return []
     results = []
     wfs_results = list(wfs.contents)
     for layer in wfs_results:
@@ -63,7 +67,7 @@ def get_esri_rest_layers(context, data_dict=None):
             LOGGER.error(error)
             return {'error': 'Url is not a valid ESRI rest service'}
     else:
-        return {'error':"No url field provided. Please specify an url."}
+        return {'error': "No url field provided. Please specify an url."}
 
 def get_esri_rest_helper(url, item_id):
     """get a specific esri rest layer by layer id, this is
@@ -84,7 +88,7 @@ def get_esri_rest_helper(url, item_id):
             if str(layer['id']) == str(item_id):
                 return layer['name']
         return item_id
-    except ValueError as error:
+    except Exception as error:
         LOGGER.error(error)
         return item_id
 
@@ -102,7 +106,8 @@ class Wfs_CheckerPlugin(plugins.SingletonPlugin):
     #IConfigurer
     @staticmethod
     def update_config(config_):
-        """ Returns a string representing the location of the 
+        """
+            Returns a string representing the location of the
             template to be rendered when the view is displayed
         """
         toolkit.add_template_directory(config_, 'templates')

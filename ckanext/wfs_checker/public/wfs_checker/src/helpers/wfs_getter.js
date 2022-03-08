@@ -77,6 +77,7 @@ export class WFS_getter {
                     console.error(resp.result.error)
                     ui_funcs.handle_request_fail()
                     throw resp.result.error
+
                 } else{
                     var options = this.create_options(resp.result)
                     ui_funcs.add_to_drop_down(options)

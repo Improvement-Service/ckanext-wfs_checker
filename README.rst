@@ -32,18 +32,15 @@
 ckanext-wfs_checker
 =============
 
-.. Put a description of your extension here:
-   What does it do? What features does it have?
-   Consider including some screenshots or embedding a video!
+Adds the ability to be read wfs and esri rest services when creating or updating a new resource and give the ability to select a specific layer from the chosen service. 
 
+WARNING - This Extension overrides existing resource form pages. 
 
 ------------
 Requirements
 ------------
 
-For example, you might want to mention here which versions of CKAN this
-extension works with.
-
+python 3
 
 ------------
 Installation

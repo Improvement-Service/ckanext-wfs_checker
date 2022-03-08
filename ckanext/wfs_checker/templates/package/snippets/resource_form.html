@@ -33,7 +33,7 @@
     {% else %}
         {% set service_type_style = 'display:none' %}
     {% endif %}
-        <div class="form-group row" id="service_type_group" style='{{service_type_style}}'">
+        <div class="form-group row" id="service_type_group" style='{{service_type_style}}'>
             <label for="service_type" class="col-form-label required">Service Type</label>
                 <select id="service_type" name="service_type" class="form-control control-medium">
                     {% if data.service_type == 'other' %}

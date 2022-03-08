@@ -16,7 +16,7 @@ class ESRI_REST():
     def _get_params(self):
         if '?' in self.url and self.url.split('?')[1].strip != "":
             params = self.url.split('?')[1].split("&")
-            return [{'key':p.split('=')[0],'value':p.split('=')[1]} for p in params]
+            return [{'key': p.split('=')[0], 'value':p.split('=')[1]} for p in params]
         return []
 
     def _get_route(self):

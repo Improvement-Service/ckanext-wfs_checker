@@ -32,7 +32,7 @@
 ckanext-wfs_checker
 =============
 
-Adds the ability to be read wfs and esri rest services when creating or updating a new resource and give the ability to select a specific layer from the chosen service. 
+Adds the ability to be read wfs and esri rest services when creating or updating a new resource and give the ability to select a specific layer from the chosen service. this adds two additional fields to resource service_type and wfs_name.
 
 WARNING - This Extension overrides existing resource form pages. 
 

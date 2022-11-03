@@ -104,7 +104,7 @@ export function add_to_drop_down(options){
         handle_request_fail()
         return null;
     } else if (options.length > 1 ){
-        var select = "<option value=" + '' + ">Please Select Layer</option>";
+        var select = "<option value=" + 'null' + ">Please Select Layer</option>";
         $(select).appendTo('#layer_name_dropdown');
     }
     $.each(options, function(i, data) {

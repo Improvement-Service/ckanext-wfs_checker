@@ -83,6 +83,11 @@ export function get_layers_btn_listener(webserviceChecker){
 
 export function submit_btn_listener(webserviceChecker){
     $('#checkBtn').click(function() {
+        webserviceChecker.set_submit_type('submit')
+        webserviceChecker.checkValues()
+    })
+    $('#checkBtnAdd').click(function() {
+        webserviceChecker.set_submit_type('add')
         webserviceChecker.checkValues()
     })
 }

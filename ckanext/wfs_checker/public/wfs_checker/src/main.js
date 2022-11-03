@@ -6,6 +6,7 @@ class Webservice_Checker {
         this.url = ''
         this.is_file = true
         this.service_type = null
+        this.submit_type = null
     }
 
     set_url(url){
@@ -18,6 +19,10 @@ class Webservice_Checker {
 
     set_service_type(service_type){
         this.service_type = service_type
+    }
+
+    set_submit_type(submit_type){
+        this.submit_type = submit_type
     }
 
     get_url(){
@@ -49,15 +54,14 @@ class Webservice_Checker {
     checkValues() {
         let url = document.getElementById('field-image-url')
         let layer_name = document.getElementById("layer_name_dropdown")
-        let resource_name = document.getElementById("field-name")
-        let uploader_name = document.getElementById("resource-uploader_name")
-        let department_name = document.getElementById("resource-department_name")
-        let digit_background = document.getElementById("digit_background")
-        let data_processor = document.getElementById("resource-data_processor")
-        let field_description = document.getElementById("field-description")
         let service_type = document.getElementById("service_type")
-        let form = [url, layer_name, resource_name, uploader_name, department_name,
-            digit_background, data_processor, field_description, service_type]
+        // let resource_name = document.getElementById("field-name")
+        // let uploader_name = document.getElementById("resource-uploader_name")
+        // let department_name = document.getElementById("resource-department_name")
+        // let digit_background = document.getElementById("digit_background")
+        // let data_processor = document.getElementById("resource-data_processor")
+        // let field_description = document.getElementById("field-description")
+        let form = [url, layer_name, service_type]
         let errors = []
         for (let i = 0; i < form.length; i++) {
             let element = form[i];
@@ -89,10 +93,14 @@ class Webservice_Checker {
     }
 
     formSubmit() {
-        if(document.getElementById('saveBtn')){
-            $("#saveBtn").click()
-        } else {
-            $("#submitBtn").click()
+        if(this.submit_type == 'add'){
+            $("#submitAddBtn").click()
+        } else{
+            if(document.getElementById('saveBtn')){
+                $("#saveBtn").click()
+            } else {
+                $("#submitBtn").click()
+            }
         }
     }
 }
@@ -103,6 +111,6 @@ export default webserviceChecker
 
 $(document).ready(function() {
     // timeout needed ad if it runs to quickly the elements wont be created yet so listners wont be set up correctly
-    setTimeout(webserviceChecker.set_up, 600)
+    setTimeout(webserviceChecker.set_up, 800)
 })
 

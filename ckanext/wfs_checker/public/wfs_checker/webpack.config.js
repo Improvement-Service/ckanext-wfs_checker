@@ -56,7 +56,7 @@ const config = {
   },node: {
   fs: 'empty'
 },
-  mode: 'production'
+  mode: 'development'
 };
 
 module.exports = config;

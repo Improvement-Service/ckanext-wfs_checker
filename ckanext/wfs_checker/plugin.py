@@ -4,7 +4,7 @@ import ckan.plugins.toolkit as toolkit
 import json 
 import logging
 from owslib.wfs import WebFeatureService
-from .esri_rest import ESRI_REST
+from ckanext.wfs_checker.esri_rest import ESRI_REST
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,6 @@ def get_wfs_layers(context, data_dict=None):
             url = str(json_data['url'])
             try:
                 wfs = WebFeatureService(url=url, version='1.1.0')
-                print(wfs)
             except Exception as error:
                 LOGGER.error(error)
                 return {'error': 'URL provided is not a valid wfs'}

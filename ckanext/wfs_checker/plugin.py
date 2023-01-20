@@ -8,6 +8,8 @@ from ckanext.wfs_checker.esri_rest import ESRI_REST
 
 LOGGER = logging.getLogger(__name__)
 
+SERVICE_FORCE_ONE_LAYER = False
+
 @toolkit.side_effect_free
 def get_wfs_layers(context, data_dict=None):
     """get all wfs layers in a wfs service
@@ -95,6 +97,26 @@ class Wfs_CheckerPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.interfaces.IActions)
     plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IResourceController, inherit=True)
+
+    def raise_validation_error(self, attr, error_string, error_summary):
+        """
+            uses ckan validationError function to raise errors on upload if
+        """
+        error = {attr: [error_string]}
+        raise toolkit.ValidationError(error, error_summary=error_summary)
+
+    def before_create(self, context, resource):
+        if 'service_type' not in resource.keys() and 'layer_name' in resource.keys():
+            del resource['layer_name']
+        if 'layer_name' in resource.keys() and resource['layer_name'] == 'null':
+            resource['layer_name'] = ""
+
+    def before_update(self, context, current, resource):
+        if 'service_type' not in resource.keys() and 'layer_name' in resource.keys():
+            del resource['layer_name']
+        if 'layer_name' in resource.keys() and resource['layer_name'] == 'null':
+            resource['layer_name'] = ""
 
     @staticmethod
     def get_helpers():

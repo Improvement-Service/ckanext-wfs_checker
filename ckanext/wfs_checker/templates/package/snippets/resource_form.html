@@ -5,11 +5,25 @@
 {% block basic_fields_url %}
     {% set is_upload = (data.url_type == 'upload') %}
 
+    {#
     {{ form.image_upload(data, errors, field_url='url', field_upload='upload', field_clear='clear_upload',
     is_upload_enabled=h.uploads_enabled(), is_url=data.url and not is_upload, is_upload=is_upload,
     upload_label=_('Contribute'), placeholder=_('Please enter your URL here'),
     url_label=_('URL'))
     }}
+    #}
+
+    {% set is_upload = (data.url_type == 'upload') %}
+    {% snippet 'package/snippets/resource_upload_field.html',
+      data=data,
+      errors=errors,
+      is_url=data.url and not is_upload,
+      is_upload=is_upload,
+      is_upload_enabled=h.uploads_enabled(),
+      url_label=_('URL'),
+      upload_label=_('File'),
+      placeholder=_('http://example.com/external-data.csv') %}
+
 
     {% if data.service_type and data.service_type != 'null'  %}
         {% set service_type_style = 'display:block' %}
@@ -86,6 +100,7 @@
             </div>
         </div>
     </div>
+    
 
 {% endblock %}
 
@@ -105,8 +120,10 @@
     {% endif %}
 
     {% block again_button %}
+    {#
         <button id="submitAddBtn" style='display:none;' class="btn btn-default"name="save" value="again" type="submit">{{ _('Save & add another') }}</button>
         <button type="button" id='checkBtnAdd' class="btn btn-default">Agree to T&C's & add another</button>
+    #}
     {% endblock %}
 
     {% if stage %}

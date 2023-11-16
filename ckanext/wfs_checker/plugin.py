@@ -21,11 +21,9 @@ def get_wfs_layers(context, data_dict=None):
     Returns:
         [dictionary]: list of dictionarys
     """
-    data = data_dict.get('json')
-    if data is not None:
-        json_data = json.loads(data)
-        if 'url' in json_data.keys():
-            url = str(json_data['url'])
+    if data_dict is not None:
+        if 'url' in data_dict.keys():
+            url = str(data_dict['url'])
             try:
                 wfs = WebFeatureService(url=url, version='1.1.0')
             except Exception as error:
@@ -54,9 +52,8 @@ def get_esri_rest_layers(context, data_dict=None):
     Returns:
         [dictionary]: list of dictionarys
     """
-    data = json.loads(data_dict['json'])
-    if 'url' in data.keys():
-        url = str(data['url'])
+    if data_dict is not None:
+        url = str(data_dict['url'])
         try:
             esri_rest = ESRI_REST(url)
             resp = esri_rest.get_layers()
@@ -106,13 +103,13 @@ class Wfs_CheckerPlugin(plugins.SingletonPlugin):
         error = {attr: [error_string]}
         raise toolkit.ValidationError(error, error_summary=error_summary)
 
-    def before_create(self, context, resource):
+    def before_resource_create(self, context, resource):
         if 'service_type' not in resource.keys() and 'layer_name' in resource.keys():
             del resource['layer_name']
         if 'layer_name' in resource.keys() and resource['layer_name'] == 'null':
             resource['layer_name'] = ""
 
-    def before_update(self, context, current, resource):
+    def before_resource_update(self, context, current, resource):
         if 'service_type' not in resource.keys() and 'layer_name' in resource.keys():
             del resource['layer_name']
         if 'layer_name' in resource.keys() and resource['layer_name'] == 'null':

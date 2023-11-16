@@ -40,16 +40,20 @@ export class WFS_getter {
 
     get_layers(){
         ui_funcs.handle_loading()
-        let url = $("#field-image-url").val().trim()
-        let fetch_url = `${this.getCurrentURLPath()}/api/3/action/get_esri_rest_layers`
-        var payload = {
-            url: url
-        };
-        var data = new FormData();
-        data.append( "json", JSON.stringify( payload ) );
+        let url = this.url.trim()
+        let fetch_url = `${this.getCurrentURLPath()}/api/3/action/get_esri_rest_layers?`
+        var raw = JSON.stringify({
+            "url": url
+          });
+        var CSRFToken = $('meta[name=_csrf_token]').attr('content')
         fetch(fetch_url,{
             method: "POST",
-            body: data
+            body: raw,
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": CSRFToken
+            },
         })
         .then(this.handleResponse)
         .then((resp) =>{

@@ -19,7 +19,7 @@ export class WFS_getter {
         if(url.includes('?')){
             url = url.split('?')[0]
         }
-        url = url + '?request=getcapabilities&service=wfs'
+        url = url + '?request=getcapabilities&servicehttps://desktop.postman.com/?desktopVersion=10.20.0&userId=7601508&teamId=0=wfs'
         if(token != null){
             url = url + '&' + token;
         }
@@ -59,19 +59,24 @@ export class WFS_getter {
 
     get_layers(){
         ui_funcs.handle_loading()
-        let url = $("#field-image-url").val().trim()
-        let fetch_url = `${this.getCurrentURLPath()}/api/3/action/get_wfs_layers`
-        var payload = {
-            url: this.cleanUrl(url)
-        };
-        var data = new FormData();
-        data.append( "json", JSON.stringify( payload ) );
+        let url = this.url.trim()
+        let fetch_url = `${this.getCurrentURLPath()}/api/3/action/get_wfs_layers?`
+        var raw = JSON.stringify({
+            "url": this.cleanUrl(url)
+          });
+        var CSRFToken = $('meta[name=_csrf_token]').attr('content')
         fetch(fetch_url,{
             method: "POST",
-            body: data
+            body: raw,
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": CSRFToken
+            },
         })
         .then(this.handleResponse)
         .then((resp) =>{
+            console.log(resp)
             if (resp.status_code = 200){
                 if (resp.result.error){
                     console.error(resp.result.error)

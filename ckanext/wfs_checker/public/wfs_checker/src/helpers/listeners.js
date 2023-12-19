@@ -5,21 +5,41 @@ var esri_rest_getter = require('./esri_rest_getter')
 var isURL = require('is-url')
 
 export function link_btn_listener(webserviceChecker){
-    document.getElementsByClassName("controls ")[1].childNodes[3].onclick = function() {
+
+    function action(){
         ui_funcs.service_type_display_block()
         webserviceChecker.set_is_file(false)
     }
+
+    if (document.getElementById("resource-url-link").checked == true){
+        action()
+    }
+
+    var resource_link_btn = document.getElementById("resource-link-button")
+    resource_link_btn.addEventListener('click',  function(event){
+        action()
+        },false
+    )
 }
 
 export function remove_link_btn_listener(webserviceChecker){
-    document.getElementsByClassName("btn btn-danger btn-remove-url")[0].onclick = function() {
+    function action (){
         ui_funcs.service_type_display_none()
         ui_funcs.layer_selector_disable()
         ui_funcs.selectElement('service_type','null')
         ui_funcs.reset_layer_dropdown()
         ui_funcs.clear_all_error_notes()
-        webserviceChecker.set_is_file(true)
+        webserviceChecker.set_is_file(true) 
     }
+    if (document.getElementById("resource-url-link").checked == false){
+        action()
+    } 
+
+    var remove_btn = document.getElementsByClassName("btn btn-danger btn-remove-url")[1]
+    remove_btn.addEventListener('click',  function(event){
+        action()
+        },false
+    )
 }
 
 export function service_selector_listener(webserviceChecker){
@@ -58,7 +78,7 @@ export function service_selector_listener(webserviceChecker){
 export function get_layers_btn_listener(webserviceChecker){
     $('#get_layers_btn').click(function() {
         ui_funcs.clear_all_error_notes()
-        var url_value = $("#field-image-url").val()
+        var url_value = $("#field-resource-url").val()
         if (url_value != '' && isURL(url_value)){
             webserviceChecker.set_data_from_form_values()
             if (webserviceChecker.get_service_type() == 'wfs' && webserviceChecker.get_is_file() == false ) {
@@ -96,7 +116,6 @@ export function set_up_all_listeners(){
     const webserviceChecker = main.default
     link_btn_listener(webserviceChecker)
     remove_link_btn_listener(webserviceChecker)
-    link_btn_listener(webserviceChecker)
     service_selector_listener(webserviceChecker)
     get_layers_btn_listener(webserviceChecker)
     submit_btn_listener(webserviceChecker)

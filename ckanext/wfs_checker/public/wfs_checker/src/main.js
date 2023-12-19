@@ -10,6 +10,7 @@ class Webservice_Checker {
     }
 
     set_url(url){
+
         this.url = url
     }
 
@@ -52,7 +53,8 @@ class Webservice_Checker {
     }
     
     checkValues() {
-        let url = document.getElementById('field-image-url')
+        let upload = document.getElementById("field-resource-upload")
+        let url = document.getElementById('field-resource-url')
         let layer_name = document.getElementById("layer_name_dropdown")
         let service_type = document.getElementById("service_type")
         // let resource_name = document.getElementById("field-name")
@@ -61,6 +63,9 @@ class Webservice_Checker {
         // let digit_background = document.getElementById("digit_background")
         // let data_processor = document.getElementById("resource-data_processor")
         // let field_description = document.getElementById("field-description")
+        if (this.is_file){
+            url = upload
+        }
         let form = [url, layer_name, service_type]
         let errors = []
         for (let i = 0; i < form.length; i++) {
@@ -110,7 +115,6 @@ const webserviceChecker = new Webservice_Checker()
 export default webserviceChecker
 
 $(document).ready(function() {
-    // timeout needed ad if it runs to quickly the elements wont be created yet so listners wont be set up correctly
-    setTimeout(webserviceChecker.set_up, 800)
+    setTimeout(webserviceChecker.set_up, 50)
 })
 
